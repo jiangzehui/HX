@@ -13,6 +13,7 @@
         android:src="@mipmap/ic_launcher" />
 
     <EditText
+        android:inputType="textEmailAddress"
         android:id="@+id/et_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,6 +21,7 @@
         android:hint="@string/login_user" />
 
     <EditText
+        android:inputType="textPassword"
         android:id="@+id/et_pswd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

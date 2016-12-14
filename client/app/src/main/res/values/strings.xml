@@ -4,4 +4,5 @@
     <string name="login_pswd">请输入密码</string>
     <string name="login_login">登  陆</string>
     <string name="login_regster">新用户注册</string>
+    <string name="regster_regster">注  册</string>
 </resources>

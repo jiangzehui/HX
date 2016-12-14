@@ -2,26 +2,60 @@ package cn.jiangzehui.hx;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import butterknife.BindView;
+import com.hyphenate.EMCallBack;
+import com.hyphenate.chat.EMClient;
+
 import butterknife.ButterKnife;
+import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.jiangzehui.hx.util.T;
 
 public class LoginActivity extends AppCompatActivity {
 
-    @BindView(R.id.et_user)
+
+    @InjectView(R.id.et_user)
     EditText etUser;
-    @BindView(R.id.et_pswd)
+    @InjectView(R.id.et_pswd)
     EditText etPswd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
+        ButterKnife.inject(this);
+
+
+    }
+
+
+    /**
+     * 登陆操作
+     */
+    private void login() {
+        String str_user = etUser.getText().toString();
+        String str_pswd = etPswd.getText().toString();
+        EMClient.getInstance().login(str_user,str_pswd,new EMCallBack() {//回调
+            @Override
+            public void onSuccess() {
+                EMClient.getInstance().groupManager().loadAllGroups();
+                EMClient.getInstance().chatManager().loadAllConversations();
+                Log.d("main", "登录聊天服务器成功！");
+            }
+
+            @Override
+            public void onProgress(int progress, String status) {
+
+            }
+
+            @Override
+            public void onError(int code, String message) {
+                Log.d("main", "登录聊天服务器失败！");
+            }
+        });
     }
 
 
@@ -32,16 +66,8 @@ public class LoginActivity extends AppCompatActivity {
                 login();
                 break;
             case R.id.tv_regster:
-                T.open(LoginActivity.this, LoginActivity.class);
+                T.open(LoginActivity.this, RegsterActivity.class);
                 break;
         }
-    }
-
-    /**
-     * 登陆操作
-     */
-    private void login() {
-        String str_user = etUser.getText().toString();
-        String str_pswd = etPswd.getText().toString();
     }
 }
