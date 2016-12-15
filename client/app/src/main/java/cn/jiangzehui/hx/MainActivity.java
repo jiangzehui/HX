@@ -35,7 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private class MyConnectionListener implements EMConnectionListener {
         @Override
         public void onConnected() {
-            tvTishi.setVisibility(View.INVISIBLE);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tvTishi.setVisibility(View.INVISIBLE);
+                }
+            });
         }
 
         @Override

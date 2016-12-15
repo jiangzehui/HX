@@ -1,6 +1,8 @@
 package cn.jiangzehui.hx;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -38,14 +40,13 @@ public class LoginActivity extends AppCompatActivity {
     private void login() {
         String str_user = etUser.getText().toString();
         String str_pswd = etPswd.getText().toString();
-        EMClient.getInstance().login(str_user,str_pswd,new EMCallBack() {//回调
+        EMClient.getInstance().login(str_user, str_pswd, new EMCallBack() {//回调
             @Override
             public void onSuccess() {
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
                 Log.d("main", "登录聊天服务器成功！");
-                T.open(LoginActivity.this,MainActivity.class);
-                finish();
+                handler.sendEmptyMessage(0);
             }
 
             @Override
@@ -55,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(int code, String message) {
+                handler.sendEmptyMessage(1);
                 Log.d("main", "登录聊天服务器失败！");
             }
         });
@@ -72,4 +74,22 @@ public class LoginActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    Handler handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    T.show(LoginActivity.this, "登录聊天服务器成功！");
+                    T.open(LoginActivity.this, MainActivity.class);
+                    finish();
+                    break;
+                case 1:
+                    T.show(LoginActivity.this, "登录聊天服务器失败！");
+                    break;
+            }
+        }
+    };
 }
