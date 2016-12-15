@@ -1,23 +1,33 @@
 package cn.jiangzehui.hx;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.NetUtils;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import cn.jiangzehui.hx.util.T;
 
 public class MainActivity extends AppCompatActivity {
 
     @InjectView(R.id.tv_tishi)
     TextView tvTishi;
+    @InjectView(R.id.lv)
+    ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +40,37 @@ public class MainActivity extends AppCompatActivity {
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
     }
 
+    @OnClick(R.id.tv_add)
+    public void onClick() {
+        T.open(this, AddFriendActivity.class);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<String> usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
+                    if (usernames.size() != 0) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                lv.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, usernames));
+                            }
+                        });
+                    }
+
+
+                } catch (HyphenateException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+    }
 
     //实现ConnectionListener接口
     private class MyConnectionListener implements EMConnectionListener {
@@ -38,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    tvTishi.setVisibility(View.INVISIBLE);
+                    tvTishi.setVisibility(View.GONE);
                 }
             });
         }

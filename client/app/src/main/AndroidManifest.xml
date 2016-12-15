@@ -67,7 +67,9 @@
         </receiver>
         <!-- 环信相关 -->
 
-        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".AddFriendActivity" />
+        <activity android:name=".ChatActivity"></activity>
     </application>
 
 </manifest>
