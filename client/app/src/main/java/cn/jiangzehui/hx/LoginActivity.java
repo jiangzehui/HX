@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
                 EMClient.getInstance().groupManager().loadAllGroups();
                 EMClient.getInstance().chatManager().loadAllConversations();
                 Log.d("main", "登录聊天服务器成功！");
+                T.open(LoginActivity.this,MainActivity.class);
+                finish();
             }
 
             @Override
