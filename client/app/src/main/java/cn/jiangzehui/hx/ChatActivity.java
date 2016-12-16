@@ -21,7 +21,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @InjectView(R.id.rv)
     RecyclerView rv;
-     List<EMMessage> messages;
+    List<EMMessage> messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
