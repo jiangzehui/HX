@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                 EMClient.getInstance().chatManager().loadAllConversations();
                 Log.d("main", "登录聊天服务器成功！");
                 handler.sendEmptyMessage(0);
+
             }
 
             @Override

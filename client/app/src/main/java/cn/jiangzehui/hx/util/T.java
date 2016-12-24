@@ -4,11 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by quxianglin on 16/12/14.
  */
 public class T {
     private static Intent intent = new Intent();
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public static String getTime() {
+        return sdf.format(new Date());
+    }
 
 
     public static void show(Context context, String content) {
