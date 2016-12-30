@@ -1,7 +1,9 @@
 package cn.jiangzehui.hx;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,7 @@ import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.Inflater;
 
@@ -27,7 +30,7 @@ public class ChatActivity extends AppCompatActivity {
 
     @InjectView(R.id.rv)
     RecyclerView rv;
-    List<ChatMessage> list;
+    List<ChatMessage> list = new ArrayList<>();
     @InjectView(R.id.et_content)
     EditText etContent;
     String username;
@@ -41,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
+        rv.setLayoutManager(new LinearLayoutManager(this));
         username = getIntent().getStringExtra("username");
         inflater = LayoutInflater.from(this);
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
@@ -48,6 +52,7 @@ public class ChatActivity extends AppCompatActivity {
 //        //获取此会话的所有消息
 //        messages = conversation.getAllMessages();
     }
+
 
     EMMessageListener msgListener = new EMMessageListener() {
 
@@ -60,12 +65,17 @@ public class ChatActivity extends AppCompatActivity {
             cm.setType(INPUT);
             cm.setTime(T.getTime());
             list.add(cm);
-            if (adapter == null) {
-                adapter = new MyAdapter();
-                rv.setAdapter(adapter);
-            } else {
-                adapter.notifyDataSetChanged();
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (adapter == null) {
+                        adapter = new MyAdapter(list);
+                        rv.setAdapter(adapter);
+                    } else {
+                        adapter.setList(list);
+                    }
+                }
+            });
         }
 
         @Override
@@ -114,16 +124,27 @@ public class ChatActivity extends AppCompatActivity {
         cm.setUser(EMClient.getInstance().getCurrentUser());
         list.add(cm);
         if (adapter == null) {
-            adapter = new MyAdapter();
+            adapter = new MyAdapter(list);
             rv.setAdapter(adapter);
         } else {
-            adapter.notifyDataSetChanged();
+            adapter.setList(list);
         }
 
     }
 
 
     class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
+
+        List<ChatMessage> list;
+
+        public MyAdapter(List<ChatMessage> list) {
+            this.list = list;
+        }
+
+        public void setList(List<ChatMessage> list) {
+            this.list = list;
+            notifyDataSetChanged();
+        }
 
         @Override
         public int getItemViewType(int position) {
@@ -135,10 +156,10 @@ public class ChatActivity extends AppCompatActivity {
             MyHolder holder = null;
             switch (viewType) {
                 case INPUT:
-                    holder = new MyHolder(inflater.inflate(R.layout.item_chat_input, null));
+                    holder = new MyHolder(inflater.inflate(R.layout.item_chat_input, parent, false));
                     break;
                 case OUTPUT:
-                    holder = new MyHolder(inflater.inflate(R.layout.item_chat_output, null));
+                    holder = new MyHolder(inflater.inflate(R.layout.item_chat_output, parent, false));
                     break;
             }
             return holder;
