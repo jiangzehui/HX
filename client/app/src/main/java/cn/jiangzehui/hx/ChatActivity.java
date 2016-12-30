@@ -60,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
             ChatMessage cm = new ChatMessage();
+
             cm.setBody(messages.get(messages.size() - 1).getBody().toString());
             cm.setUser(messages.get(messages.size() - 1).getUserName());
             cm.setType(INPUT);
