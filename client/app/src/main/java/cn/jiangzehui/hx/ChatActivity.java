@@ -60,8 +60,11 @@ public class ChatActivity extends AppCompatActivity {
         public void onMessageReceived(List<EMMessage> messages) {
             //收到消息
             ChatMessage cm = new ChatMessage();
+            String body = messages.get(messages.size() - 1).getBody().toString();
+            if(body.contains("txt")){
+                cm.setBody(body.substring(body.indexOf("\"")+1, body.lastIndexOf("\"")));
+            }
 
-            cm.setBody(messages.get(messages.size() - 1).getBody().toString());
             cm.setUser(messages.get(messages.size() - 1).getUserName());
             cm.setType(INPUT);
             cm.setTime(T.getTime());
