@@ -1,12 +1,14 @@
 package cn.jiangzehui.hx.model;
 
+import java.io.Serializable;
+
 /**
  * Created by quxianglin on 16/12/24.
  */
-public class ChatMessage {
+public class ChatMessage implements Serializable{
     private int type;//INPUT OUTPUT
     private String user;//用户名
-    private String body;
+    private String txt;
     private String nick;
     private String time;
     private String icon;
@@ -27,12 +29,12 @@ public class ChatMessage {
         this.user = user;
     }
 
-    public String getBody() {
-        return body;
+    public String getTxt() {
+        return txt;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setTxt(String txt) {
+        this.txt = txt;
     }
 
     public String getNick() {

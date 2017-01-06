@@ -1,8 +1,14 @@
 package cn.jiangzehui.hx;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -12,7 +18,10 @@ import android.widget.TextView;
 
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
+import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.NetUtils;
 
@@ -21,6 +30,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.util.T;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
     TextView tvTishi;
     @InjectView(R.id.lv)
     ListView lv;
+    Intent intent;
+
+
+    NotificationCompat.Builder builder;
+    NotificationManagerCompat notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +54,9 @@ public class MainActivity extends AppCompatActivity {
         EMClient.getInstance().chatManager().loadAllConversations();
         //注册一个监听连接状态的listener
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
+        EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
+
 
     @OnClick(R.id.tv_add)
     public void onClick() {
@@ -78,6 +95,83 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
+    EMMessageListener msgListener = new EMMessageListener() {
+
+        @Override
+        public void onMessageReceived(List<EMMessage> messages) {
+
+            Log.i("chat", "收到消息");
+            for (int i = 0; i < messages.size(); i++) {
+                if (messages.get(messages.size() - 1).getType().toString().equals("TXT")) {
+                    EMTextMessageBody body = (EMTextMessageBody) messages.get(messages.size() - 1).getBody();
+                    Log.i("msg" + i, body.getMessage());
+                }
+            }
+//            //收到消息
+            ChatMessage cm = new ChatMessage();
+
+            if (messages.get(messages.size() - 1).getType().toString().equals("TXT")) {
+                EMTextMessageBody body = (EMTextMessageBody) messages.get(messages.size() - 1).getBody();
+                cm.setTxt(body.getMessage());
+            }
+
+            cm.setUser(messages.get(messages.size() - 1).getUserName());
+            cm.setType(2);
+            cm.setTime(T.getTime());
+            if (ChatActivity.ca == null) {
+                if (builder == null) {
+                    builder = new NotificationCompat.Builder(MainActivity.this);
+                    notificationManager =
+                            NotificationManagerCompat.from(MainActivity.this);
+                }
+                Intent intent1 = new Intent(MainActivity.this, ChatActivity.class);
+                intent1.putExtra("cm", cm);
+                PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 1, intent1, 0);
+
+                Notification notification = builder
+                        .setContentTitle(cm.getUser())
+                        .setContentText(cm.getTxt())
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentIntent(pi)
+                        .build();
+                notification.flags = Notification.FLAG_AUTO_CANCEL;
+
+                notificationManager.notify(1, notification);
+            } else {
+                if (intent == null) {
+                    intent = new Intent();
+                }
+                intent.setAction("com.chat.msg");
+                intent.putExtra("cm", cm);
+                intent.putExtra("msg", "msg");
+                sendBroadcast(intent);
+            }
+
+
+        }
+
+        @Override
+        public void onCmdMessageReceived(List<EMMessage> messages) {
+            //收到透传消息
+        }
+
+        @Override
+        public void onMessageReadAckReceived(List<EMMessage> messages) {
+            //收到已读回执
+        }
+
+        @Override
+        public void onMessageDeliveryAckReceived(List<EMMessage> message) {
+            //收到已送达回执
+        }
+
+        @Override
+        public void onMessageChanged(EMMessage message, Object change) {
+            //消息状态变动
+        }
+    };
 
     //实现ConnectionListener接口
     private class MyConnectionListener implements EMConnectionListener {
@@ -122,5 +216,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //记得在不需要的时候移除listener，如在activity的onDestroy()时
+        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
     }
 }

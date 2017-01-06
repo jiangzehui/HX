@@ -1,10 +1,12 @@
 package cn.jiangzehui.hx;
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.jiangzehui.hx.model.ChatMessage;
+import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
 
 public class ChatActivity extends AppCompatActivity {
@@ -34,10 +38,31 @@ public class ChatActivity extends AppCompatActivity {
     @InjectView(R.id.et_content)
     EditText etContent;
     String username;
-    final int INPUT = 2;//接收
     final int OUTPUT = 1;//发送
+    final int INPUT = 2;//接收
+
     LayoutInflater inflater;
     MyAdapter adapter;
+    ChatReceiver cr;
+    IntentFilter filter = new IntentFilter();
+    public static ChatActivity ca;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ca = this;
+        cr = new ChatReceiver(ucu);
+        filter.addAction("com.chat.msg");
+        //注册receiver
+        registerReceiver(cr, filter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(cr);
+        ca = null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,69 +71,37 @@ public class ChatActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         rv.setLayoutManager(new LinearLayoutManager(this));
         username = getIntent().getStringExtra("username");
+        if (username == null) {
+            ChatMessage cm = (ChatMessage) getIntent().getSerializableExtra("cm");
+            username = cm.getUser();
+            list.add(cm);
+            adapter = new MyAdapter(list);
+            rv.setAdapter(adapter);
+
+        }
         inflater = LayoutInflater.from(this);
-        EMClient.getInstance().chatManager().addMessageListener(msgListener);
+
+
 //        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
 //        //获取此会话的所有消息
 //        messages = conversation.getAllMessages();
     }
 
 
-    EMMessageListener msgListener = new EMMessageListener() {
+    public ChatReceiver.UpdateChatUi ucu = new ChatReceiver.UpdateChatUi() {
 
         @Override
-        public void onMessageReceived(List<EMMessage> messages) {
-            //收到消息
-            ChatMessage cm = new ChatMessage();
-            String body = messages.get(messages.size() - 1).getBody().toString();
-            if(body.contains("txt")){
-                cm.setBody(body.substring(body.indexOf("\"")+1, body.lastIndexOf("\"")));
-            }
-
-            cm.setUser(messages.get(messages.size() - 1).getUserName());
-            cm.setType(INPUT);
-            cm.setTime(T.getTime());
+        public void msg(ChatMessage cm) {
             list.add(cm);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (adapter == null) {
-                        adapter = new MyAdapter(list);
-                        rv.setAdapter(adapter);
-                    } else {
-                        adapter.setList(list);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void onCmdMessageReceived(List<EMMessage> messages) {
-            //收到透传消息
-        }
-
-        @Override
-        public void onMessageReadAckReceived(List<EMMessage> messages) {
-            //收到已读回执
-        }
-
-        @Override
-        public void onMessageDeliveryAckReceived(List<EMMessage> message) {
-            //收到已送达回执
-        }
-
-        @Override
-        public void onMessageChanged(EMMessage message, Object change) {
-            //消息状态变动
+            if (adapter == null) {
+                adapter = new MyAdapter(list);
+                rv.setAdapter(adapter);
+            } else {
+                adapter.setList(list);
+            }
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //记得在不需要的时候移除listener，如在activity的onDestroy()时
-        EMClient.getInstance().chatManager().removeMessageListener(msgListener);
-    }
 
     @OnClick(R.id.btn_send)
     public void onClick() {
@@ -123,7 +116,7 @@ public class ChatActivity extends AppCompatActivity {
         EMClient.getInstance().chatManager().sendMessage(message);
         ChatMessage cm = new ChatMessage();
         cm.setType(OUTPUT);
-        cm.setBody(content);
+        cm.setTxt(content);
         cm.setTime(T.getTime());
         cm.setUser(EMClient.getInstance().getCurrentUser());
         list.add(cm);
@@ -193,7 +186,7 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             private void set(int position) {
-                tv.setText(list.get(position).getBody());
+                tv.setText(list.get(position).getTxt());
             }
         }
     }

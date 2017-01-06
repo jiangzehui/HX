@@ -69,7 +69,9 @@
 
         <activity android:name=".MainActivity" />
         <activity android:name=".AddFriendActivity" />
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
+
+
     </application>
 
 </manifest>
