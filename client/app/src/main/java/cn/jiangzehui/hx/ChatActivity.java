@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ca = this;
+         ca = this;
         cr = new ChatReceiver(ucu);
         filter.addAction("com.chat.msg");
         //注册receiver
