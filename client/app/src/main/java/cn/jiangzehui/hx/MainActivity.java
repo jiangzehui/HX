@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             NotificationManagerCompat.from(MainActivity.this);
                 }
                 Intent intent1 = new Intent(MainActivity.this, ChatActivity.class);
-                intent1.putExtra("cm", cm);
+                intent1.putExtra("username", cm.getUser());
                 PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 Notification notification = builder

@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
@@ -50,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-         ca = this;
+        ca = this;
         cr = new ChatReceiver(ucu);
         filter.addAction("com.chat.msg");
         //注册receiver
@@ -70,16 +71,25 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
         rv.setLayoutManager(new LinearLayoutManager(this));
-        username = getIntent().getStringExtra("username");
-        if (username == null) {
-            ChatMessage cm = (ChatMessage) getIntent().getSerializableExtra("cm");
-            username = cm.getUser();
-            list.add(cm);
-            adapter = new MyAdapter(list);
-            rv.setAdapter(adapter);
-
-        }
         inflater = LayoutInflater.from(this);
+        username = getIntent().getStringExtra("username");
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
+        //获取此会话的所有消息
+        List<EMMessage> messages = conversation.getAllMessages();
+        for (int i = 0; i < messages.size(); i++) {
+            ChatMessage cm = new ChatMessage();
+
+            if (messages.get(i).getType().toString().equals("TXT")) {
+                EMTextMessageBody body = (EMTextMessageBody) messages.get(i).getBody();
+                cm.setTxt(body.getMessage());
+            }
+            cm.setUser(messages.get(i).getUserName());
+            cm.setType(2);
+            cm.setTime(T.getTime(messages.get(i).getMsgTime()));
+            list.add(cm);
+        }
+        adapter = new MyAdapter(list);
+        rv.setAdapter(adapter);
 
 
 //        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);

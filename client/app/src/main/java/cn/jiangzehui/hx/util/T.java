@@ -17,6 +17,9 @@ public class T {
     public static String getTime() {
         return sdf.format(new Date());
     }
+    public static String getTime(long time) {
+        return sdf.format(new Date(time));
+    }
 
 
     public static void show(Context context, String content) {
