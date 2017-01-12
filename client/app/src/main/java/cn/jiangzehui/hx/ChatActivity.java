@@ -84,7 +84,12 @@ public class ChatActivity extends AppCompatActivity {
                 cm.setTxt(body.getMessage());
             }
             cm.setUser(messages.get(i).getUserName());
-            cm.setType(2);
+            if(messages.get(i).getFrom().equals(username)){
+                cm.setType(2);
+            }else{
+                cm.setType(1);
+            }
+
             cm.setTime(T.getTime(messages.get(i).getMsgTime()));
             list.add(cm);
         }

@@ -104,50 +104,47 @@ public class MainActivity extends AppCompatActivity {
 
             Log.i("chat", "收到消息");
             for (int i = 0; i < messages.size(); i++) {
-                if (messages.get(messages.size() - 1).getType().toString().equals("TXT")) {
-                    EMTextMessageBody body = (EMTextMessageBody) messages.get(messages.size() - 1).getBody();
-                    Log.i("msg" + i, body.getMessage());
+                //收到消息
+                ChatMessage cm = new ChatMessage();
+
+                if (messages.get(i).getType().toString().equals("TXT")) {
+                    EMTextMessageBody body = (EMTextMessageBody) messages.get(i).getBody();
+                    cm.setTxt(body.getMessage());
+                }
+
+                cm.setUser(messages.get(i).getUserName());
+                cm.setType(2);
+                cm.setTime(T.getTime(messages.get(i).getMsgTime()));
+                if (ChatActivity.ca == null) {
+                    if (builder == null) {
+                        builder = new NotificationCompat.Builder(MainActivity.this);
+                        notificationManager =
+                                NotificationManagerCompat.from(MainActivity.this);
+                    }
+                    Intent intent1 = new Intent(MainActivity.this, ChatActivity.class);
+                    intent1.putExtra("username", cm.getUser());
+                    PendingIntent pi = PendingIntent.getActivity(MainActivity.this, i, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    Notification notification = builder
+                            .setContentTitle(cm.getUser())
+                            .setContentText(cm.getTxt())
+                            .setSmallIcon(R.mipmap.ic_launcher)
+                            .setContentIntent(pi)
+                            .build();
+                    notification.flags = Notification.FLAG_AUTO_CANCEL;
+
+                    notificationManager.notify(i, notification);
+                } else {
+                    if (intent == null) {
+                        intent = new Intent();
+                    }
+                    intent.setAction("com.chat.msg");
+                    intent.putExtra("cm", cm);
+                    intent.putExtra("msg", "msg");
+                    sendBroadcast(intent);
                 }
             }
-//            //收到消息
-            ChatMessage cm = new ChatMessage();
-
-            if (messages.get(messages.size() - 1).getType().toString().equals("TXT")) {
-                EMTextMessageBody body = (EMTextMessageBody) messages.get(messages.size() - 1).getBody();
-                cm.setTxt(body.getMessage());
-            }
-
-            cm.setUser(messages.get(messages.size() - 1).getUserName());
-            cm.setType(2);
-            cm.setTime(T.getTime());
-            if (ChatActivity.ca == null) {
-                if (builder == null) {
-                    builder = new NotificationCompat.Builder(MainActivity.this);
-                    notificationManager =
-                            NotificationManagerCompat.from(MainActivity.this);
-                }
-                Intent intent1 = new Intent(MainActivity.this, ChatActivity.class);
-                intent1.putExtra("username", cm.getUser());
-                PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 1, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                Notification notification = builder
-                        .setContentTitle(cm.getUser())
-                        .setContentText(cm.getTxt())
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentIntent(pi)
-                        .build();
-                notification.flags = Notification.FLAG_AUTO_CANCEL;
-
-                notificationManager.notify(1, notification);
-            } else {
-                if (intent == null) {
-                    intent = new Intent();
-                }
-                intent.setAction("com.chat.msg");
-                intent.putExtra("cm", cm);
-                intent.putExtra("msg", "msg");
-                sendBroadcast(intent);
-            }
+//
 
 
         }

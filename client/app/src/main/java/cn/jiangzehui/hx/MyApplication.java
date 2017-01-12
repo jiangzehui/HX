@@ -14,7 +14,8 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         EMOptions options = new EMOptions();
-        options.setAutoLogin(false);
+        options.setAutoLogin(true);
+
         // 默认添加好友时，是不需要验证的，改成需要验证
         //options.setAcceptInvitationAlways(false);
         //初始化
