@@ -24,11 +24,15 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.et_pswd)
     EditText etPswd;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
+
 
 
     }

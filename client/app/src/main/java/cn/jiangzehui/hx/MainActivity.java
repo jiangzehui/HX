@@ -5,17 +5,16 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hyphenate.EMCallBack;
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
 import com.hyphenate.EMMessageListener;
@@ -52,16 +51,12 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.inject(this);
         EMClient.getInstance().groupManager().loadAllGroups();
         EMClient.getInstance().chatManager().loadAllConversations();
+
         //注册一个监听连接状态的listener
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
 
-
-    @OnClick(R.id.tv_add)
-    public void onClick() {
-        T.open(this, AddFriendActivity.class);
-    }
 
     @Override
     protected void onResume() {
@@ -169,6 +164,39 @@ public class MainActivity extends AppCompatActivity {
             //消息状态变动
         }
     };
+
+    @OnClick({R.id.tv_zx, R.id.tv_add})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.tv_zx:
+                EMClient.getInstance().logout(true, new EMCallBack() {
+
+                    @Override
+                    public void onSuccess() {
+                        T.open(MainActivity.this, LoginActivity.class);
+                        finish();
+
+                    }
+
+                    @Override
+                    public void onProgress(int progress, String status) {
+                        // TODO Auto-generated method stub
+
+                    }
+
+                    @Override
+                    public void onError(int code, String message) {
+                        // TODO Auto-generated method stub
+
+                    }
+                });
+
+                break;
+            case R.id.tv_add:
+                T.open(this, AddFriendActivity.class);
+                break;
+        }
+    }
 
     //实现ConnectionListener接口
     private class MyConnectionListener implements EMConnectionListener {
