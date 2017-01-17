@@ -73,7 +73,11 @@ public class ChatActivity extends AppCompatActivity {
         rv.setLayoutManager(new LinearLayoutManager(this));
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat,true);
+        if(conversation==null){
+            return;
+        }
+        conversation.markAllMessagesAsRead();//设置已读
         //获取此会话的所有消息
         List<EMMessage> messages = conversation.getAllMessages();
         for (int i = 0; i < messages.size(); i++) {
