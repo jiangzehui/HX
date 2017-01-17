@@ -19,12 +19,14 @@ import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.NetUtils;
 
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
         //注册一个监听连接状态的listener
         EMClient.getInstance().addConnectionListener(new MyConnectionListener());
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
+
+
+        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+        Log.i("conversations",conversations.toString());
+
     }
 
 

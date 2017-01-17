@@ -78,6 +78,16 @@ public class ChatActivity extends AppCompatActivity {
             return;
         }
         conversation.markAllMessagesAsRead();//设置已读
+        //获取聊天记录
+        final List<EMMessage> msgs = conversation.getAllMessages();
+        int msgCount = msgs != null ? msgs.size() : 0;
+        if (msgCount < conversation.getAllMsgCount() && msgCount < 20) {
+            String msgId = null;
+            if (msgs != null && msgs.size() > 0) {
+                msgId = msgs.get(0).getMsgId();
+            }
+            conversation.loadMoreMsgFromDB(msgId, 20 - msgCount);
+        }
         //获取此会话的所有消息
         List<EMMessage> messages = conversation.getAllMessages();
         for (int i = 0; i < messages.size(); i++) {
