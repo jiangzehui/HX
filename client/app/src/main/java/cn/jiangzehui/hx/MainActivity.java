@@ -64,8 +64,7 @@ public class MainActivity extends FragmentActivity {
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
 
 
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        Log.i("conversations",conversations.toString());
+
         init(0);
 
     }
@@ -219,10 +218,10 @@ public class MainActivity extends FragmentActivity {
                 break;
 
             case R.id.tv1:
-
+                init(0);
                 break;
             case R.id.tv2:
-
+                init(1);
                 break;
         }
     }
