@@ -4,6 +4,9 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
@@ -31,16 +34,18 @@ import java.util.Map;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.jiangzehui.hx.fragment.ChatFragment;
+import cn.jiangzehui.hx.fragment.FriendFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.util.T;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
 
     @InjectView(R.id.tv_tishi)
     TextView tvTishi;
-    @InjectView(R.id.lv)
-    ListView lv;
     Intent intent;
+    private ChatFragment cf;
+    private FriendFragment ff;
 
 
     NotificationCompat.Builder builder;
@@ -61,42 +66,51 @@ public class MainActivity extends AppCompatActivity {
 
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         Log.i("conversations",conversations.toString());
+        init(0);
 
     }
 
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final List<String> usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
-                    if (usernames.size() != 0) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                lv.setAdapter(new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, usernames));
-                            }
-                        });
-                    }
-                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            T.open(MainActivity.this, ChatActivity.class, "username", usernames.get(i));
-                        }
-                    });
-
-
-                } catch (HyphenateException e) {
-                    e.printStackTrace();
-                }
+    public void init(int index){
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        if (fragments != null) {
+            for (Fragment f : fragments) {
+                ft.hide(f);
             }
-        }).start();
+        }
+
+        Fragment fragment;
+        switch (index) {
+
+            case 0:
+
+                fragment = getSupportFragmentManager().findFragmentByTag("cf");
+                if (fragment == null) {
+                    cf = new ChatFragment();
+                    ft.add(R.id.frame, cf, "cf");
+                } else {
+                    ft.show(fragment);
+                }
+                break;
+            case 1:
+
+                fragment = getSupportFragmentManager().findFragmentByTag("ff");
+                if (fragment == null) {
+                    ff = new FriendFragment();
+                    ft.add(R.id.frame, ff, "ff");
+                } else {
+                    ft.show(fragment);
+                }
+                break;
 
 
+        }
+        ft.commit();
     }
+
+
+
 
 
     EMMessageListener msgListener = new EMMessageListener() {
@@ -172,9 +186,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    @OnClick({R.id.tv_zx, R.id.tv_add})
+    @OnClick({R.id.tv_zx, R.id.tv_add, R.id.tv1, R.id.tv2})
     public void onClick(View view) {
         switch (view.getId()) {
+
             case R.id.tv_zx:
                 EMClient.getInstance().logout(true, new EMCallBack() {
 
@@ -200,7 +215,14 @@ public class MainActivity extends AppCompatActivity {
 
                 break;
             case R.id.tv_add:
-                T.open(this, AddFriendActivity.class);
+                T.open(MainActivity.this, AddFriendActivity.class);
+                break;
+
+            case R.id.tv1:
+
+                break;
+            case R.id.tv2:
+
                 break;
         }
     }
