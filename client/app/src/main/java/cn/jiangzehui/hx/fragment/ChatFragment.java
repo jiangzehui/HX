@@ -38,10 +38,12 @@ public class ChatFragment extends Fragment {
         ButterKnife.inject(this, view);
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         ArrayList<String> list=new ArrayList<>(conversations.keySet());
+        if(list!=null&&list.size()>0){
+            Log.i("conversations",conversations.toString());
+            Log.i("conversations",list.size()+"");
+            Log.i("conversations",list.get(0));
+        }
 
-        Log.i("conversations",conversations.toString());
-        Log.i("conversations",list.size()+"");
-        Log.i("conversations",list.get(0));
         return view;
     }
 
