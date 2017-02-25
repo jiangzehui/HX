@@ -70,7 +70,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+       // linearLayoutManager.setReverseLayout(true);
+        rv.setLayoutManager(linearLayoutManager);
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat,true);
@@ -109,6 +112,7 @@ public class ChatActivity extends AppCompatActivity {
         }
         adapter = new MyAdapter(list);
         rv.setAdapter(adapter);
+
 
 
 //        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
