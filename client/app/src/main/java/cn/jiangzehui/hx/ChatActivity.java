@@ -2,11 +2,10 @@ package cn.jiangzehui.hx;
 
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
@@ -22,11 +20,11 @@ import com.hyphenate.chat.EMTextMessageBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.jiangzehui.hx.emoji.FaceFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
@@ -47,20 +45,11 @@ public class ChatActivity extends AppCompatActivity {
     ChatReceiver cr;
     IntentFilter filter = new IntentFilter();
     public static ChatActivity ca;
-
+    boolean isShow = false;
+    FaceFragment faceFragment;
     @Override
-    protected void onStart() {
-        super.onStart();
-        ca = this;
-        cr = new ChatReceiver(ucu);
-        filter.addAction("com.chat.msg");
-        //注册receiver
-        registerReceiver(cr, filter);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         unregisterReceiver(cr);
         ca = null;
     }
@@ -70,14 +59,17 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
+        faceFragment = FaceFragment.Instance();
+        getSupportFragmentManager().beginTransaction().add(R.id.Container,faceFragment).hide(faceFragment).commit();
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-       // linearLayoutManager.setReverseLayout(true);
+        // linearLayoutManager.setReverseLayout(true);
         rv.setLayoutManager(linearLayoutManager);
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat,true);
-        if(conversation==null){
+        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
+        if (conversation == null) {
             return;
         }
         conversation.markAllMessagesAsRead();//设置已读
@@ -101,9 +93,9 @@ public class ChatActivity extends AppCompatActivity {
                 cm.setTxt(body.getMessage());
             }
             cm.setUser(messages.get(i).getUserName());
-            if(messages.get(i).getFrom().equals(username)){
+            if (messages.get(i).getFrom().equals(username)) {
                 cm.setType(2);
-            }else{
+            } else {
                 cm.setType(1);
             }
 
@@ -113,6 +105,11 @@ public class ChatActivity extends AppCompatActivity {
         adapter = new MyAdapter(list);
         rv.setAdapter(adapter);
 
+        ca = this;
+        cr = new ChatReceiver(ucu);
+        filter.addAction("com.chat.msg");
+        //注册receiver
+        registerReceiver(cr, filter);
 
 
 //        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
@@ -135,31 +132,41 @@ public class ChatActivity extends AppCompatActivity {
         }
     };
 
+    @OnClick({R.id.btn_img, R.id.btn_send})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_img:
+                if(faceFragment.isVisible()){//判断是否显示
+                    getSupportFragmentManager().beginTransaction().hide(faceFragment).commit();
+                }else{
+                    getSupportFragmentManager().beginTransaction().show(faceFragment).commit();
+                }
 
-    @OnClick(R.id.btn_send)
-    public void onClick() {
-        String content = etContent.getText().toString();
-        if (content.equals("")) {
-            T.show(ChatActivity.this, "发送内容不能为空");
-            return;
+                break;
+            case R.id.btn_send:
+                String content = etContent.getText().toString();
+                if (content.equals("")) {
+                    T.show(ChatActivity.this, "发送内容不能为空");
+                    return;
+                }
+                //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
+                EMMessage message = EMMessage.createTxtSendMessage(content, username);
+                //发送消息
+                EMClient.getInstance().chatManager().sendMessage(message);
+                ChatMessage cm = new ChatMessage();
+                cm.setType(OUTPUT);
+                cm.setTxt(content);
+                cm.setTime(T.getTime());
+                cm.setUser(EMClient.getInstance().getCurrentUser());
+                list.add(cm);
+                if (adapter == null) {
+                    adapter = new MyAdapter(list);
+                    rv.setAdapter(adapter);
+                } else {
+                    adapter.setList(list);
+                }
+                break;
         }
-        //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
-        EMMessage message = EMMessage.createTxtSendMessage(content, username);
-        //发送消息
-        EMClient.getInstance().chatManager().sendMessage(message);
-        ChatMessage cm = new ChatMessage();
-        cm.setType(OUTPUT);
-        cm.setTxt(content);
-        cm.setTime(T.getTime());
-        cm.setUser(EMClient.getInstance().getCurrentUser());
-        list.add(cm);
-        if (adapter == null) {
-            adapter = new MyAdapter(list);
-            rv.setAdapter(adapter);
-        } else {
-            adapter.setList(list);
-        }
-
     }
 
 

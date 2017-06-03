@@ -6,4 +6,9 @@
     <string name="login_regster">新用户注册</string>
     <string name="regster_regster">注  册</string>
     <string name="addfriend">添  加</string>
+
+    <!-- Emoji -->
+    <string name="face_recently">Recently</string>
+    <string name="face_Emoji">Emoji</string>
+    <string name="face_set_one">Default</string>
 </resources>

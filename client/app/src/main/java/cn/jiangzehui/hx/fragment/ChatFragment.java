@@ -59,6 +59,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 T.open(getActivity(), ChatActivity.class, "username", list.get(i));
+
             }
         });
 

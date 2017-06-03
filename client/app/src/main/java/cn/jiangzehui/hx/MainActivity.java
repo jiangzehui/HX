@@ -8,13 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hyphenate.EMCallBack;
@@ -22,18 +18,16 @@ import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
-import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.NetUtils;
 
 import java.util.List;
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.jiangzehui.hx.emoji.FaceFragment;
 import cn.jiangzehui.hx.fragment.ChatFragment;
 import cn.jiangzehui.hx.fragment.FriendFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
@@ -56,6 +50,9 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
+
+
+
         EMClient.getInstance().groupManager().loadAllGroups();
         EMClient.getInstance().chatManager().loadAllConversations();
 
