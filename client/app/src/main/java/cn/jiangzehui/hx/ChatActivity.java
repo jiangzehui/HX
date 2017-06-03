@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,18 +20,21 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import cn.jiangzehui.hx.emoji.Emoji;
+import cn.jiangzehui.hx.emoji.EmojiUtil;
 import cn.jiangzehui.hx.emoji.FaceFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEmojiClickListener{
 
     @InjectView(R.id.rv)
     RecyclerView rv;
@@ -169,6 +174,55 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onEmojiDelete() {
+        String text = etContent.getText().toString();
+        if (text.isEmpty()) {
+            return;
+        }
+        if ("]".equals(text.substring(text.length() - 1, text.length()))) {
+            int index = text.lastIndexOf("[");
+            if (index == -1) {
+                int action = KeyEvent.ACTION_DOWN;
+                int code = KeyEvent.KEYCODE_DEL;
+                KeyEvent event = new KeyEvent(action, code);
+                etContent.onKeyDown(KeyEvent.KEYCODE_DEL, event);
+                displayTextView();
+                return;
+            }
+            etContent.getText().delete(index, text.length());
+            displayTextView();
+            return;
+        }
+        int action = KeyEvent.ACTION_DOWN;
+        int code = KeyEvent.KEYCODE_DEL;
+        KeyEvent event = new KeyEvent(action, code);
+        etContent.onKeyDown(KeyEvent.KEYCODE_DEL, event);
+        displayTextView();
+    }
+
+    @Override
+    public void onEmojiClick(Emoji emoji) {
+        if (emoji != null) {
+            int index = etContent.getSelectionStart();
+            Editable editable = etContent.getEditableText();
+            if (index < 0) {
+                editable.append(emoji.getContent());
+            } else {
+                editable.insert(index, emoji.getContent());
+            }
+        }
+        displayTextView();
+    }
+
+    private void displayTextView() {
+        try {
+            EmojiUtil.handlerEmojiText(etContent, etContent.getText().toString(), this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyHolder> {
 
@@ -226,7 +280,13 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             private void set(int position) {
-                tv.setText(list.get(position).getTxt());
+
+                try {
+                    EmojiUtil.handlerEmojiText(tv, list.get(position).getTxt(), ChatActivity.this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }

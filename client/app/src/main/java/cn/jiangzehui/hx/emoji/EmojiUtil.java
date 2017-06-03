@@ -7,7 +7,10 @@ import android.graphics.BitmapFactory;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ImageSpan;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -290,6 +293,31 @@ public class EmojiUtil {
     public static int dip2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
+    }
+
+    public static void handlerEmojiText(EditText comment, String content, Context context) throws IOException {
+        SpannableStringBuilder sb = new SpannableStringBuilder(content);
+        String regex = "\\[(\\S+?)\\]";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(content);
+        Iterator<Emoji> iterator;
+        Emoji emoji = null;
+        while (m.find()) {
+            iterator = emojiList.iterator();
+            String tempText = m.group();
+            while (iterator.hasNext()) {
+                emoji = iterator.next();
+                if (tempText.equals(emoji.getContent())) {
+                    //转换为Span并设置Span的大小
+                    sb.setSpan(new ImageSpan(context, decodeSampledBitmapFromResource(context.getResources(), emoji.getImageUri()
+                                    , dip2px(context, 18), dip2px(context, 18))),
+                            m.start(), m.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    break;
+                }
+            }
+        }
+        comment.setText(sb);
+        comment.setSelection(sb.length());
     }
 
     public static void handlerEmojiText(TextView comment, String content, Context context) throws IOException {
