@@ -27,8 +27,8 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import cn.jiangzehui.hx.emoji.FaceFragment;
 import cn.jiangzehui.hx.fragment.ChatFragment;
+import cn.jiangzehui.hx.fragment.MsgFragment;
 import cn.jiangzehui.hx.fragment.FriendFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.util.T;
@@ -38,8 +38,9 @@ public class MainActivity extends FragmentActivity {
     @InjectView(R.id.tv_tishi)
     TextView tvTishi;
     Intent intent;
-    private ChatFragment cf;
+    private MsgFragment mf;
     private FriendFragment ff;
+    private ChatFragment cf;
 
 
     NotificationCompat.Builder builder;
@@ -81,10 +82,10 @@ public class MainActivity extends FragmentActivity {
 
             case 0:
 
-                fragment = getSupportFragmentManager().findFragmentByTag("cf");
+                fragment = getSupportFragmentManager().findFragmentByTag("mf");
                 if (fragment == null) {
-                    cf = new ChatFragment();
-                    ft.add(R.id.frame, cf, "cf");
+                    mf = new MsgFragment();
+                    ft.add(R.id.frame, mf, "mf");
                 } else {
                     ft.show(fragment);
                 }
@@ -95,6 +96,16 @@ public class MainActivity extends FragmentActivity {
                 if (fragment == null) {
                     ff = new FriendFragment();
                     ft.add(R.id.frame, ff, "ff");
+                } else {
+                    ft.show(fragment);
+                }
+                break;
+            case 2:
+
+                fragment = getSupportFragmentManager().findFragmentByTag("cf");
+                if (fragment == null) {
+                    cf = new ChatFragment();
+                    ft.add(R.id.frame, cf, "cf");
                 } else {
                     ft.show(fragment);
                 }
@@ -167,14 +178,16 @@ public class MainActivity extends FragmentActivity {
         }
 
         @Override
-        public void onMessageReadAckReceived(List<EMMessage> messages) {
-            //收到已读回执
+        public void onMessageRead(List<EMMessage> messages) {
+
         }
 
         @Override
-        public void onMessageDeliveryAckReceived(List<EMMessage> message) {
-            //收到已送达回执
+        public void onMessageDelivered(List<EMMessage> messages) {
+
         }
+
+
 
         @Override
         public void onMessageChanged(EMMessage message, Object change) {
@@ -182,7 +195,7 @@ public class MainActivity extends FragmentActivity {
         }
     };
 
-    @OnClick({R.id.tv_zx, R.id.tv_add, R.id.tv1, R.id.tv2})
+    @OnClick({R.id.tv_zx, R.id.tv_add, R.id.tv1, R.id.tv2, R.id.tv3})
     public void onClick(View view) {
         switch (view.getId()) {
 
@@ -219,6 +232,9 @@ public class MainActivity extends FragmentActivity {
                 break;
             case R.id.tv2:
                 init(1);
+                break;
+            case R.id.tv3:
+                init(2);
                 break;
         }
     }

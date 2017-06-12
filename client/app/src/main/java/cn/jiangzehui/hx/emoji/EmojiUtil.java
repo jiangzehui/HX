@@ -335,7 +335,7 @@ public class EmojiUtil {
                 if (tempText.equals(emoji.getContent())) {
                     //转换为Span并设置Span的大小
                     sb.setSpan(new ImageSpan(context, decodeSampledBitmapFromResource(context.getResources(), emoji.getImageUri()
-                                    , dip2px(context, 18), dip2px(context, 18))),
+                                    , dip2px(context, 50), dip2px(context, 50))),
                             m.start(), m.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     break;
                 }

@@ -64,7 +64,7 @@ public class FriendFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                lv.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, usernames));
+                                lv.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usernames));
                             }
                         });
                     }

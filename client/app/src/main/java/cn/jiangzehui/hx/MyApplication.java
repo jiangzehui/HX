@@ -5,6 +5,8 @@ import android.app.Application;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
+import cn.jiangzehui.hx.util.T;
+
 /**
  * Created by quxianglin on 16/12/14.
  */
@@ -13,6 +15,8 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        T.context = getApplicationContext();
+
         EMOptions options = new EMOptions();
         options.setAutoLogin(true);
 
@@ -22,5 +26,6 @@ public class MyApplication extends Application {
         EMClient.getInstance().init(getApplicationContext(), options);
 //在做打包混淆时，关闭debug模式，避免消耗不必要的资源
         EMClient.getInstance().setDebugMode(true);
+
     }
 }

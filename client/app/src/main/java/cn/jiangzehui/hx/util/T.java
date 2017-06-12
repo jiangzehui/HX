@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public class T {
     private static Intent intent = new Intent();
+    public static Context context;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public static String getTime() {
@@ -23,6 +24,9 @@ public class T {
 
 
     public static void show(Context context, String content) {
+        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
+    }
+    public static void show(String content) {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }
 
