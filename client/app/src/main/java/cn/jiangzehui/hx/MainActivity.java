@@ -167,6 +167,7 @@ public class MainActivity extends FragmentActivity {
                     sendBroadcast(intent);
                 }
             }
+            mf.updateUi();
 //
 
 

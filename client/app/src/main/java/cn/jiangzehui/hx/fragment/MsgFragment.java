@@ -37,6 +37,7 @@ public class MsgFragment extends Fragment {
     ListView lv;
     ArrayList<String> list;
     MyAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,18 +47,7 @@ public class MsgFragment extends Fragment {
         }
 
         ButterKnife.inject(this, view);
-        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
-        list=new ArrayList<>(conversations.keySet());
-        if(list!=null&&list.size()>0){
 
-            Log.i("conversations",list.size()+"");
-            if(adapter==null){
-                adapter=new MyAdapter();
-                lv.setAdapter(adapter);
-            }else{
-                adapter.notifyDataSetChanged();
-            }
-        }
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -68,7 +58,35 @@ public class MsgFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUi();
+    }
 
+    /**
+     * 更新会话信息
+     */
+    public void updateUi() {
+        Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
+        list=new ArrayList<>(conversations.keySet());
+        if(list!=null&&list.size()>0){
+
+            Log.i("conversations",list.size()+"");
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(adapter==null){
+                        adapter=new MyAdapter();
+                        lv.setAdapter(adapter);
+                    }else{
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
+    }
 
     @Override
     public void onDestroyView() {
@@ -112,10 +130,16 @@ public class MsgFragment extends Fragment {
                 msg = body.getMessage();
 
             }
+            int count = conversation.getUnreadMsgCount();
+            if(count == 0){
+                holder.tvCount.setVisibility(View.GONE);
+            }else{
+                holder.tvCount.setVisibility(View.VISIBLE);
+                holder.tvCount.setText(count+"");
+            }
             holder.tvName.setText(list.get(i));
             holder.tvMsg.setText(msg);
-            holder.tvCount.setText(conversation.getUnreadMsgCount()+"");
-            holder.tvTime.setText(message.getMsgTime()+"");
+            holder.tvTime.setText(T.getTime(message.getMsgTime()));
 
 
             return view;
