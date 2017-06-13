@@ -25,10 +25,10 @@ import cn.jiangzehui.hx.R;
 /**
  * Created by teambition on 15/8/27.
  */
-public class FaceFragment extends Fragment implements View.OnClickListener {
+public class EmojiFragment extends Fragment implements View.OnClickListener {
 
-    public static FaceFragment Instance() {
-        FaceFragment instance = new FaceFragment();
+    public static EmojiFragment Instance() {
+        EmojiFragment instance = new EmojiFragment();
         Bundle bundle = new Bundle();
         instance.setArguments(bundle);
         return instance;

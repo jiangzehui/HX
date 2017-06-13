@@ -2,7 +2,6 @@ package cn.jiangzehui.hx;
 
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,12 +28,12 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.jiangzehui.hx.emoji.Emoji;
 import cn.jiangzehui.hx.emoji.EmojiUtil;
-import cn.jiangzehui.hx.emoji.FaceFragment;
+import cn.jiangzehui.hx.emoji.EmojiFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
 
-public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEmojiClickListener{
+public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnEmojiClickListener{
 
     @InjectView(R.id.rv)
     RecyclerView rv;
@@ -51,7 +50,7 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
     IntentFilter filter = new IntentFilter();
     public static ChatActivity ca;
     boolean isShow = false;
-    FaceFragment faceFragment;
+    EmojiFragment emojiFragment;
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -64,13 +63,13 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
-        faceFragment = FaceFragment.Instance();
-        getSupportFragmentManager().beginTransaction().add(R.id.Container,faceFragment).hide(faceFragment).commit();
+        emojiFragment = EmojiFragment.Instance();
+        getSupportFragmentManager().beginTransaction().add(R.id.Container, emojiFragment).hide(emojiFragment).commit();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        // linearLayoutManager.setReverseLayout(true);
         rv.setLayoutManager(linearLayoutManager);
+
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
@@ -109,7 +108,7 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
         }
         adapter = new MyAdapter(list);
         rv.setAdapter(adapter);
-
+        rv.smoothScrollToPosition(list.size());
         ca = this;
         cr = new ChatReceiver(ucu);
         filter.addAction("com.chat.msg");
@@ -141,10 +140,10 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_img:
-                if(faceFragment.isVisible()){//判断是否显示
-                    getSupportFragmentManager().beginTransaction().hide(faceFragment).commit();
+                if(emojiFragment.isVisible()){//判断是否显示
+                    getSupportFragmentManager().beginTransaction().hide(emojiFragment).commit();
                 }else{
-                    getSupportFragmentManager().beginTransaction().show(faceFragment).commit();
+                    getSupportFragmentManager().beginTransaction().show(emojiFragment).commit();
                 }
 
                 break;
@@ -154,6 +153,7 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
                     T.show(ChatActivity.this, "发送内容不能为空");
                     return;
                 }
+                etContent.setText("");
                 //创建一条文本消息，content为消息文字内容，toChatUsername为对方用户或者群聊的id，后文皆是如此
                 EMMessage message = EMMessage.createTxtSendMessage(content, username);
                 //发送消息
@@ -170,6 +170,7 @@ public class ChatActivity extends AppCompatActivity implements FaceFragment.OnEm
                 } else {
                     adapter.setList(list);
                 }
+                rv.smoothScrollToPosition(list.size());
                 break;
         }
     }

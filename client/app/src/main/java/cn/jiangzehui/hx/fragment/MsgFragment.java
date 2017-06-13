@@ -9,13 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.chat.EMTextMessageBody;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -45,9 +49,8 @@ public class MsgFragment extends Fragment {
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         list=new ArrayList<>(conversations.keySet());
         if(list!=null&&list.size()>0){
-            Log.i("conversations",conversations.toString());
+
             Log.i("conversations",list.size()+"");
-            Log.i("conversations",list.get(0));
             if(adapter==null){
                 adapter=new MyAdapter();
                 lv.setAdapter(adapter);
@@ -59,7 +62,6 @@ public class MsgFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 T.open(getActivity(), ChatActivity.class, "username", list.get(i));
-
             }
         });
 
@@ -93,12 +95,47 @@ public class MsgFragment extends Fragment {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            TextView tv=new TextView(getActivity());
-            tv.setPadding(20,20,20,20);
-            tv.setTextSize(20);
-            tv.setText(list.get(i));
-            return tv;
+
+            Holder holder;
+            if(view ==null){
+                view = LayoutInflater.from(getActivity()).inflate(R.layout.item_msg,viewGroup,false);
+                holder = new Holder(view);
+                view.setTag(holder);
+            }else{
+                holder = (Holder) view.getTag();
+            }
+            EMConversation conversation = EMClient.getInstance().chatManager().getConversation(list.get(i));
+            EMMessage message = conversation.getLastMessage();
+            String msg = "";
+            if (message.getType().name().equals("TXT")) {
+                EMTextMessageBody body = (EMTextMessageBody) message.getBody();
+                msg = body.getMessage();
+
+            }
+            holder.tvName.setText(list.get(i));
+            holder.tvMsg.setText(msg);
+            holder.tvCount.setText(conversation.getUnreadMsgCount()+"");
+            holder.tvTime.setText(message.getMsgTime()+"");
+
+
+            return view;
         }
+    }
+
+    class Holder {
+        TextView tvName,tvMsg,tvTime,tvCount;
+        ImageView ivIcon;
+
+        public Holder(View v){
+            tvName = (TextView) v.findViewById(R.id.tvName);
+            tvMsg = (TextView) v.findViewById(R.id.tvMsg);
+            tvTime = (TextView) v.findViewById(R.id.tvTime);
+            tvCount = (TextView) v.findViewById(R.id.tvCount);
+            ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
+        }
+
+
+
     }
 
 
