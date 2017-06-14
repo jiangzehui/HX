@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,8 +38,8 @@ public class FriendFragment extends Fragment {
     View view;
     @InjectView(R.id.lv)
     ListView lv;
-
-
+    List<String> usernames;
+    MyAdapter adapter;
 
 
     @Nullable
@@ -59,12 +61,17 @@ public class FriendFragment extends Fragment {
             @Override
             public void run() {
                 try {
-                    final List<String> usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
+                    usernames = EMClient.getInstance().contactManager().getAllContactsFromServer();
                     if (usernames.size() != 0) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                lv.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, usernames));
+                                if(adapter==null){
+                                    adapter = new MyAdapter();
+                                    lv.setAdapter(adapter);
+                                }else{
+                                    adapter.notifyDataSetChanged();
+                                }
                             }
                         });
                     }
@@ -89,6 +96,52 @@ public class FriendFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
+    }
+
+
+    class MyAdapter extends BaseAdapter{
+
+        @Override
+        public int getCount() {
+            return usernames.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return usernames.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            Holder holder;
+            if(view ==null){
+                view = LayoutInflater.from(getActivity()).inflate(R.layout.item_friend,viewGroup,false);
+                holder = new Holder(view);
+                view.setTag(holder);
+            }else{
+                holder = (Holder) view.getTag();
+            }
+            holder.tvName.setText(usernames.get(i));
+            return view;
+        }
+    }
+
+    class Holder {
+        TextView tvName;
+        ImageView ivIcon;
+
+        public Holder(View v){
+            tvName = (TextView) v.findViewById(R.id.tvName);
+            ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
+        }
+
+
+
     }
 
 
