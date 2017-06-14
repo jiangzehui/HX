@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -28,8 +29,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.jiangzehui.hx.fragment.ChatFragment;
-import cn.jiangzehui.hx.fragment.MsgFragment;
 import cn.jiangzehui.hx.fragment.FriendFragment;
+import cn.jiangzehui.hx.fragment.MsgFragment;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.util.T;
 
@@ -38,6 +39,10 @@ public class MainActivity extends FragmentActivity {
     @InjectView(R.id.tv_tishi)
     TextView tvTishi;
     Intent intent;
+    @InjectView(R.id.tv1)
+    TextView tv1;
+    @InjectView(R.id.tv2)
+    TextView tv2;
     private MsgFragment mf;
     private FriendFragment ff;
     private ChatFragment cf;
@@ -53,7 +58,6 @@ public class MainActivity extends FragmentActivity {
         ButterKnife.inject(this);
 
 
-
         EMClient.getInstance().groupManager().loadAllGroups();
         EMClient.getInstance().chatManager().loadAllConversations();
 
@@ -62,13 +66,17 @@ public class MainActivity extends FragmentActivity {
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
 
 
-
         init(0);
 
     }
 
 
-    public void init(int index){
+    public void init(int index) {
+        tv1.setTextColor(ContextCompat.getColor(this,R.color.mainfalse));
+        tv2.setTextColor(ContextCompat.getColor(this,R.color.mainfalse));
+        tv1.setCompoundDrawablesWithIntrinsicBounds(0,R.mipmap.msg_false,0,0);
+        tv2.setCompoundDrawablesWithIntrinsicBounds(0,R.mipmap.friend_false,0,0);
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         List<Fragment> fragments = getSupportFragmentManager().getFragments();
         if (fragments != null) {
@@ -81,7 +89,8 @@ public class MainActivity extends FragmentActivity {
         switch (index) {
 
             case 0:
-
+                tv1.setTextColor(ContextCompat.getColor(this,R.color.maintrue));
+                tv1.setCompoundDrawablesWithIntrinsicBounds(0,R.mipmap.msg_true,0,0);
                 fragment = getSupportFragmentManager().findFragmentByTag("mf");
                 if (fragment == null) {
                     mf = new MsgFragment();
@@ -91,7 +100,8 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case 1:
-
+                tv2.setTextColor(ContextCompat.getColor(this,R.color.maintrue));
+                tv2.setCompoundDrawablesWithIntrinsicBounds(0,R.mipmap.friend_true,0,0);
                 fragment = getSupportFragmentManager().findFragmentByTag("ff");
                 if (fragment == null) {
                     ff = new FriendFragment();
@@ -115,9 +125,6 @@ public class MainActivity extends FragmentActivity {
         }
         ft.commit();
     }
-
-
-
 
 
     EMMessageListener msgListener = new EMMessageListener() {
@@ -187,7 +194,6 @@ public class MainActivity extends FragmentActivity {
         public void onMessageDelivered(List<EMMessage> messages) {
 
         }
-
 
 
         @Override
