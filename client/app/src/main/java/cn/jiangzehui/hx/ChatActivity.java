@@ -27,13 +27,13 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import cn.jiangzehui.hx.emoji.Emoji;
-import cn.jiangzehui.hx.emoji.EmojiUtil;
 import cn.jiangzehui.hx.emoji.EmojiFragment;
+import cn.jiangzehui.hx.emoji.EmojiUtil;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
 
-public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnEmojiClickListener{
+public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnEmojiClickListener {
 
     @InjectView(R.id.rv)
     RecyclerView rv;
@@ -51,6 +51,9 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
     public static ChatActivity ca;
     boolean isShow = false;
     EmojiFragment emojiFragment;
+    @InjectView(R.id.tvName)
+    TextView tvName;
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -72,6 +75,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
+        tvName.setText(username);
         EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
         if (conversation == null) {
             return;
@@ -136,13 +140,13 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
         }
     };
 
-    @OnClick({R.id.btn_img, R.id.btn_send})
+    @OnClick({R.id.btn_img, R.id.btn_send,R.id.ivBack})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_img:
-                if(emojiFragment.isVisible()){//判断是否显示
+                if (emojiFragment.isVisible()) {//判断是否显示
                     getSupportFragmentManager().beginTransaction().hide(emojiFragment).commit();
-                }else{
+                } else {
                     getSupportFragmentManager().beginTransaction().show(emojiFragment).commit();
                 }
 
@@ -171,6 +175,9 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
                     adapter.setList(list);
                 }
                 rv.smoothScrollToPosition(list.size());
+                break;
+            case R.id.ivBack:
+                finish();
                 break;
         }
     }
