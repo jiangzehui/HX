@@ -55,6 +55,16 @@ public class MsgFragment extends Fragment {
             }
         });
 
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //删除和某个user会话，如果需要保留聊天记录，传false
+                EMClient.getInstance().chatManager().deleteConversation(list.get(i), false);
+                updateUi();
+                return true;
+            }
+        });
+
         return view;
     }
 
@@ -70,20 +80,11 @@ public class MsgFragment extends Fragment {
     public void updateUi() {
         Map<String, EMConversation> conversations = EMClient.getInstance().chatManager().getAllConversations();
         list=new ArrayList<>(conversations.keySet());
-        if(list!=null&&list.size()>0){
-
-            Log.i("conversations",list.size()+"");
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(adapter==null){
-                        adapter=new MyAdapter();
-                        lv.setAdapter(adapter);
-                    }else{
-                        adapter.notifyDataSetChanged();
-                    }
-                }
-            });
+        if(adapter==null){
+            adapter=new MyAdapter();
+            lv.setAdapter(adapter);
+        }else{
+            adapter.notifyDataSetChanged();
         }
 
     }

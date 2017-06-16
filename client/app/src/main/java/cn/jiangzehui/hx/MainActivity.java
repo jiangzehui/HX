@@ -174,7 +174,13 @@ public class MainActivity extends FragmentActivity {
                     sendBroadcast(intent);
                 }
             }
-            mf.updateUi();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mf.updateUi();
+
+                }
+            });
 //
 
 
@@ -266,12 +272,12 @@ public class MainActivity extends FragmentActivity {
                 public void run() {
                     if (error == EMError.USER_REMOVED) {
                         T.open(MainActivity.this, LoginActivity.class);
-                        T.show(MainActivity.this, "帐号已经被移除");
+                        T.show("帐号已经被移除");
                         finish();
                         // 显示帐号已经被移除
                     } else if (error == EMError.USER_LOGIN_ANOTHER_DEVICE) {
                         T.open(MainActivity.this, LoginActivity.class);
-                        T.show(MainActivity.this, "帐号在其他设备登录");
+                        T.show("帐号在其他设备登录");
                         finish();
                         // 显示帐号在其他设备登录
                     } else {

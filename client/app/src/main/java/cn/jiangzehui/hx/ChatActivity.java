@@ -154,7 +154,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
             case R.id.btn_send:
                 String content = etContent.getText().toString();
                 if (content.equals("")) {
-                    T.show(ChatActivity.this, "发送内容不能为空");
+                    T.show( "发送内容不能为空");
                     return;
                 }
                 etContent.setText("");

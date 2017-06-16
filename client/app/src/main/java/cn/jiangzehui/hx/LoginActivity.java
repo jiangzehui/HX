@@ -87,12 +87,12 @@ public class LoginActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 0:
-                    T.show(LoginActivity.this, "登录聊天服务器成功！");
+                    T.show( "登录聊天服务器成功！");
                     T.open(LoginActivity.this, MainActivity.class);
                     finish();
                     break;
                 case 1:
-                    T.show(LoginActivity.this, "登录聊天服务器失败！");
+                    T.show("登录聊天服务器失败！");
                     break;
             }
         }

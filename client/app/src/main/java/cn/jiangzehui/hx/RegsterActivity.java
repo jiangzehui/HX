@@ -40,7 +40,7 @@ public class RegsterActivity extends AppCompatActivity {
                 final String str_user = etUser.getText().toString();
                 final String str_pswd = etPswd.getText().toString();
                 if (str_user.equals("") || str_pswd.equals("")) {
-                    T.show(this, "用户名或密码不能为空");
+                    T.show("用户名或密码不能为空");
                     return;
                 }
 
@@ -56,7 +56,7 @@ public class RegsterActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    T.show(RegsterActivity.this, "注册成功");
+                                    T.show("注册成功");
                                     finish();
                                 }
                             });
@@ -65,7 +65,7 @@ public class RegsterActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    T.show(RegsterActivity.this, e.getMessage());
+                                    T.show(e.getMessage());
                                 }
                             });
 

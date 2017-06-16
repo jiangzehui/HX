@@ -23,9 +23,7 @@ public class T {
     }
 
 
-    public static void show(Context context, String content) {
-        Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
-    }
+
     public static void show(String content) {
         Toast.makeText(context, content, Toast.LENGTH_SHORT).show();
     }

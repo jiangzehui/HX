@@ -28,7 +28,7 @@ public class AddFriendActivity extends AppCompatActivity {
     public void onClick() {
         final String username = et.getText().toString();
         if (EMClient.getInstance().getCurrentUser().equals(username)) {
-            T.show(this, "不能添加自己为好友");
+            T.show("不能添加自己为好友");
             return;
         }
         new Thread(new Runnable() {
@@ -40,7 +40,7 @@ public class AddFriendActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            T.show(AddFriendActivity.this, "添加成功");
+                            T.show("添加成功");
                         }
                     });
                 } catch (final HyphenateException e) {
@@ -48,7 +48,7 @@ public class AddFriendActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            T.show(AddFriendActivity.this, "添加失败," + e.getMessage());
+                            T.show("添加失败," + e.getMessage());
                         }
                     });
                 }
