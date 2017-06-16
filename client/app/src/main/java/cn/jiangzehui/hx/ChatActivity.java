@@ -71,6 +71,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        linearLayoutManager.setStackFromEnd(true);//列表再底部开始展示，反转后由上面开始展示
         rv.setLayoutManager(linearLayoutManager);
 
         inflater = LayoutInflater.from(this);
