@@ -38,6 +38,11 @@ public class AddFriendActivity extends AppCompatActivity {
                     T.show("不能添加自己为好友");
                     return;
                 }
+                if(username.equals("")){
+                    T.show("用户名不能为空");
+                    return;
+                }
+
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,6 +15,8 @@ public class T {
     private static Intent intent = new Intent();
     public static Context context;
     private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static SimpleDateFormat sdfs = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdfss = new SimpleDateFormat("HH:mm");
 
     public static String getTime() {
         return sdf.format(new Date());
@@ -22,6 +25,33 @@ public class T {
 
     public static String getTime(long time) {
         return sdf.format(new Date(time));
+    }
+
+    public static String formatDate(long date) {
+        String now = sdfs.format(new Date());
+        try {
+            Date nowDate = sdfs.parse(now);
+            long nowLong = nowDate.getTime();
+            long oneDayLong = 1000*60*60*24;//一天的毫秒数
+            if(date>=nowLong){//今天
+               // sdfss.format();
+            }else if(date<nowLong&&date>=(nowLong-oneDayLong)){//昨天
+
+            }else if(date<(nowLong-oneDayLong)&&date>=(nowLong-oneDayLong*2)){//前天
+
+            }else{//历史事件
+
+            }
+
+
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        return sdf.format(new Date(date));
     }
 
 

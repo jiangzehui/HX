@@ -19,6 +19,10 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +34,6 @@ import cn.jiangzehui.hx.emoji.Emoji;
 import cn.jiangzehui.hx.emoji.EmojiFragment;
 import cn.jiangzehui.hx.emoji.EmojiUtil;
 import cn.jiangzehui.hx.model.ChatMessage;
-import cn.jiangzehui.hx.receiver.ChatReceiver;
 import cn.jiangzehui.hx.util.T;
 
 public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnEmojiClickListener {
@@ -46,18 +49,16 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 
     LayoutInflater inflater;
     MyAdapter adapter;
-    ChatReceiver cr;
     IntentFilter filter = new IntentFilter();
     public static ChatActivity ca;
     boolean isShow = false;
     EmojiFragment emojiFragment;
     @InjectView(R.id.tvName)
     TextView tvName;
-
+    EMConversation conversation;
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(cr);
         ca = null;
     }
 
@@ -66,6 +67,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         ButterKnife.inject(this);
+        EventBus.getDefault().register(this);
         emojiFragment = EmojiFragment.Instance();
         getSupportFragmentManager().beginTransaction().add(R.id.Container, emojiFragment).hide(emojiFragment).commit();
 
@@ -77,7 +79,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
         tvName.setText(username);
-        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
+        conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
         if (conversation == null) {
             return;
         }
@@ -115,10 +117,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
         rv.setAdapter(adapter);
         rv.smoothScrollToPosition(list.size());
         ca = this;
-        cr = new ChatReceiver(ucu);
         filter.addAction("com.chat.msg");
-        //注册receiver
-        registerReceiver(cr, filter);
 
 
 //        EMConversation conversation = EMClient.getInstance().chatManager().getConversation(username);
@@ -126,20 +125,32 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 //        messages = conversation.getAllMessages();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        conversation.markAllMessagesAsRead();//设置已读
+    }
 
-    public ChatReceiver.UpdateChatUi ucu = new ChatReceiver.UpdateChatUi() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
 
-        @Override
-        public void msg(ChatMessage cm) {
-            list.add(cm);
-            if (adapter == null) {
-                adapter = new MyAdapter(list);
-                rv.setAdapter(adapter);
-            } else {
-                adapter.setList(list);
-            }
+
+    @Subscribe(threadMode= ThreadMode.MAIN)
+    public void updateUi(ChatMessage cm){
+        list.add(cm);
+        if (adapter == null) {
+            adapter = new MyAdapter(list);
+            rv.setAdapter(adapter);
+        } else {
+            adapter.setList(list);
         }
-    };
+
+    }
+
+
 
     @OnClick({R.id.btn_img, R.id.btn_send,R.id.ivBack})
     public void onClick(View view) {

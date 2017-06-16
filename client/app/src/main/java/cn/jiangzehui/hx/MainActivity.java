@@ -23,6 +23,8 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.util.NetUtils;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -38,7 +40,6 @@ public class MainActivity extends FragmentActivity {
 
     @InjectView(R.id.tv_tishi)
     TextView tvTishi;
-    Intent intent;
     @InjectView(R.id.tv1)
     TextView tv1;
     @InjectView(R.id.tv2)
@@ -164,23 +165,21 @@ public class MainActivity extends FragmentActivity {
                     notification.flags = Notification.FLAG_AUTO_CANCEL;
 
                     notificationManager.notify(i, notification);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mf.updateUi();
+
+                        }
+                    });
+
+
                 } else {
-                    if (intent == null) {
-                        intent = new Intent();
-                    }
-                    intent.setAction("com.chat.msg");
-                    intent.putExtra("cm", cm);
-                    intent.putExtra("msg", "msg");
-                    sendBroadcast(intent);
+                   EventBus.getDefault().post(cm);
                 }
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mf.updateUi();
 
-                }
-            });
 //
 
 
