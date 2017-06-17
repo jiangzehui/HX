@@ -79,7 +79,7 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
         inflater = LayoutInflater.from(this);
         username = getIntent().getStringExtra("username");
         tvName.setText(username);
-        conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
+         conversation = EMClient.getInstance().chatManager().getConversation(username, EMConversation.EMConversationType.Chat, true);
         if (conversation == null) {
             return;
         }
