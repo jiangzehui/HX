@@ -150,7 +150,15 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 
     }
 
+    @Override
+    public void onBackPressed() {
 
+        if(emojiFragment.isVisible()){
+            getSupportFragmentManager().beginTransaction().hide(emojiFragment).commit();
+        }else{
+            finish();
+        }
+    }
 
     @OnClick({R.id.btn_img, R.id.btn_send,R.id.ivBack})
     public void onClick(View view) {

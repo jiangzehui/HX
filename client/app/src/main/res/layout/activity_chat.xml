@@ -53,27 +53,34 @@
 
 
     <LinearLayout
+        android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="horizontal">
 
         <EditText
+            android:padding="8dp"
+            android:background="@drawable/shape_edit"
             android:id="@+id/et_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <Button
+        <ImageView
+            android:padding="5dp"
             android:id="@+id/btn_img"
+            android:src="@mipmap/chat_emoji"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="表情" />
+            android:layout_height="match_parent" />
 
-        <Button
+        <TextView
             android:id="@+id/btn_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:padding="10dp"
+            android:background="@drawable/shape_btn"
             android:text="发 送" />
 
 
