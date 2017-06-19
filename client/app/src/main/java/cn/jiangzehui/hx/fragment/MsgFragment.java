@@ -27,6 +27,7 @@ import butterknife.InjectView;
 import cn.jiangzehui.hx.ChatActivity;
 import cn.jiangzehui.hx.R;
 import cn.jiangzehui.hx.util.T;
+import cn.jiangzehui.hx.view.CircleImageView;
 
 /**
  * Created by jiangzehui on 17/1/18.
@@ -149,14 +150,14 @@ public class MsgFragment extends Fragment {
 
     class Holder {
         TextView tvName,tvMsg,tvTime,tvCount;
-        ImageView ivIcon;
+        CircleImageView ivIcon;
 
         public Holder(View v){
             tvName = (TextView) v.findViewById(R.id.tvName);
             tvMsg = (TextView) v.findViewById(R.id.tvMsg);
             tvTime = (TextView) v.findViewById(R.id.tvTime);
             tvCount = (TextView) v.findViewById(R.id.tvCount);
-            ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
+            ivIcon = (CircleImageView) v.findViewById(R.id.ivIcon);
         }
 
 

@@ -30,6 +30,7 @@ import cn.jiangzehui.hx.ChatActivity;
 import cn.jiangzehui.hx.LoginActivity;
 import cn.jiangzehui.hx.R;
 import cn.jiangzehui.hx.util.T;
+import cn.jiangzehui.hx.view.CircleImageView;
 
 /**
  * Created by jiangzehui on 17/1/18.
@@ -133,11 +134,11 @@ public class FriendFragment extends Fragment {
 
     class Holder {
         TextView tvName;
-        ImageView ivIcon;
+        CircleImageView ivIcon;
 
         public Holder(View v){
             tvName = (TextView) v.findViewById(R.id.tvName);
-            ivIcon = (ImageView) v.findViewById(R.id.ivIcon);
+            ivIcon = (CircleImageView) v.findViewById(R.id.ivIcon);
         }
 
 

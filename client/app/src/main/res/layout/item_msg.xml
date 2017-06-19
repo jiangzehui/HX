@@ -2,15 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="5dp"
     android:orientation="horizontal">
 
-    <ImageView
+    <cn.jiangzehui.hx.view.CircleImageView
         android:id="@+id/ivIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"
+        app:border_color="#999999"
+        app:border_width="1dp"
+
+        />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -23,6 +28,8 @@
             android:orientation="vertical">
 
             <TextView
+                android:textColor="#000"
+                android:textSize="18dp"
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -35,6 +35,7 @@ import cn.jiangzehui.hx.emoji.EmojiFragment;
 import cn.jiangzehui.hx.emoji.EmojiUtil;
 import cn.jiangzehui.hx.model.ChatMessage;
 import cn.jiangzehui.hx.util.T;
+import cn.jiangzehui.hx.view.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnEmojiClickListener {
 
@@ -299,12 +300,12 @@ public class ChatActivity extends AppCompatActivity implements EmojiFragment.OnE
 
         class MyHolder extends RecyclerView.ViewHolder {
             TextView tv;
-            ImageView iv;
+            CircleImageView iv;
 
             public MyHolder(View itemView) {
                 super(itemView);
                 tv = (TextView) itemView.findViewById(R.id.tv);
-                iv = (ImageView) itemView.findViewById(R.id.iv);
+                iv = (CircleImageView) itemView.findViewById(R.id.iv);
             }
 
             private void set(int position) {
