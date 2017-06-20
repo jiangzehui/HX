@@ -132,7 +132,7 @@ public class FriendFragment extends Fragment {
         }
     }
 
-    class Holder {
+     class Holder {
         TextView tvName;
         CircleImageView ivIcon;
 
