@@ -17,32 +17,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:layout_alignParentTop="true"
             android:text="注销"
             android:textColor="#fff"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
 
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:text="环  信"
             android:textColor="#fff"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" />
 
-        <TextView
+        <ImageView
+
             android:id="@+id/tv_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:text="添加"
-            android:textColor="#fff"
-            android:textSize="20dp" />
+            android:src="@mipmap/add"/>
 
 
     </RelativeLayout>
